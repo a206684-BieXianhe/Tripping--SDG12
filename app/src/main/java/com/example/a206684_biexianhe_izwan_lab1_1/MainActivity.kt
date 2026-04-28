@@ -1,7 +1,6 @@
 package com.example.a206684_biexianhe_izwan_lab1_1
 
-// import - bring external classes, functions or packages into current file
-// 把外部的类、函数或者包引入到当前文件中
+import androidx.compose.foundation.lazy.items
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,14 +15,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,92 +37,64 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.collections.listOf
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.navigation.AppNavigation
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.theme.A206684_BieXianhe_Izwan_Lab1_1Theme
 
-
 class MainActivity : ComponentActivity() {
-    //Define the main activity class 定义主活动类 - entry point of the app 入口
-    //MainActivity inherits 继承 from ComponentActivity -
-    //provide build-in Android Functionality已实现很多基础功能 如：lifecycle method 生命周期 onCreate
     override fun onCreate(savedInstanceState: Bundle?) {
-        //override: override method from parent class 重写父类的方法
-        //onCreate - a lifecycle method called when activity start
-        //Activity生命周期里的启动函数，App打开时自动调用
-        //Bundle - store previous stage 保存之前的数据 如：screen rotation 屏幕旋转 ? - can be null
         super.onCreate(savedInstanceState)
-        //call the parent's onCreate method, ensure initialization 调用父类onCreate方法确保初始化
-        //先执行系统（前任），再执行自己
         enableEdgeToEdge()
-        //enable edge-to-edge display (content behind system bar)
-        //让页面延伸到屏幕边缘
         setContent {
-            //set the UI content using Jetpack Compose 设置整个APP的UI内容
             A206684_BieXianhe_Izwan_Lab1_1Theme() {
-                Scaffold(modifier = Modifier.fillMaxSize(),
+                val navController = rememberNavController()
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
                     topBar = { TopBar() },
-                    bottomBar = { BottomBar() },
+                    bottomBar = { BottomBar(navController) },
                     containerColor = MaterialTheme.colorScheme.background
-                    //fix bottomBar at the bottom, automatically handle spacing
-                    //自动把bottomBar固定在底部，自动处理内容和底部的间距
                 ) { innerPadding ->
-                    //Scaffold - layout structure 页面骨架 - provide top/bottom bar, content
-                    //modifier.fillMaxSize() -> make the layout fill the whole screen 使组件占满屏幕
-                    //innerPadding -> - padding provided by Scaffold 自动给的内边距，防止被挡overlap
-                    HomeScreen(
+                    AppNavigation(
+                        navController = navController,
                         modifier = Modifier.padding(innerPadding)
-                        //call custom UI function and apply padding to it
-                        //调用界面函数并传入padding
                     )
+                    }
                 }
             }
         }
     }
-}
 
-@Composable //mark this as UI function describe UI 表示这是一个界面函数
-fun HomeScreen(modifier: Modifier = Modifier) {
-    //modifier - control size大小, spacing/padding间距, layout布局
-    //= Modifier - set default value 设默认值
+
+@Composable
+fun HomeScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier
         .fillMaxWidth()
         .verticalScroll(rememberScrollState()))
-    //verticalScroll - whole column enable vertical scrolling 启动垂直滚动
-    //rememberScrollState - store and remember scroll position 记住并保持当前滚动位置
-    //screen recomposes - will not jump back to top 界面刷新后不会回到顶部
     {
-        //Column - vertical layout 垂直布局(top to bottom) fillMaxWidth - fill entire width 占满屏宽
-        //TopBar()
-        FunctionRow()
+        FunctionRow(navController)
         SearchBar()
         LocationSuggestions()
         SpecialFeatures()
         DealsSection()
         RecommendedSection()
         LoginModule()
-        //BottomBar() 应当删除：在上文中bottomBar = { BottomBar() }已经写了
-        //custom composable function UI组件函数
-        //Component-based design组件化 easy to maintain, reusable, clear structure
     }
 }
 
@@ -158,7 +127,6 @@ fun TopBar() {
                 containerColor = MaterialTheme.colorScheme.surface,
 
         ),
-
         ){
 
             Box(
@@ -177,7 +145,9 @@ fun TopBar() {
 
 
 @Composable
-fun FunctionRow() {
+fun FunctionRow(
+    navController: NavController
+) {
 
     Column(
         modifier = Modifier
@@ -196,28 +166,40 @@ fun FunctionRow() {
                 R.drawable.hotel1,
                 "Hotels",
                 80.dp,
-                28.dp
+                28.dp,
+                onClick = {
+                    navController.navigate("hotel_screen")
+                }
             )
 
             FunctionCardItem(
                 R.drawable.flight1,
                 "Flights",
                 80.dp,
-                28.dp
+                28.dp,
+                onClick = {
+                    navController.navigate("flight_screen")
+                }
             )
 
             FunctionCardItem(
                 R.drawable.dining1,
                 "Dining",
                 80.dp,
-                28.dp
+                28.dp,
+                onClick = {
+
+                }
             )
 
             FunctionCardItem(
                 R.drawable.train1,
                 "Trains",
                 80.dp,
-                28.dp
+                28.dp,
+                onClick = {
+                    navController.navigate("train_screen")
+                }
             )
 
         }
@@ -235,35 +217,50 @@ fun FunctionRow() {
                 R.drawable.outline_apartment_24,
                 "Apt",
                 68.dp,
-                24.dp
+                24.dp,
+                onClick = {
+
+                }
             )
 
             FunctionCardItem(
                 R.drawable.attraction1,
                 "Attractions",
                 68.dp,
-                24.dp
+                24.dp,
+                onClick = {
+
+                }
             )
 
             FunctionCardItem(
                 R.drawable.outline_car_rental_24,
                 "Car Rents",
                 68.dp,
-                24.dp
+                24.dp,
+                onClick = {
+
+                }
             )
 
             FunctionCardItem(
                 R.drawable.grouptour1,
                 "Groups",
                 68.dp,
-                24.dp
+                24.dp,
+                onClick = {
+
+                }
             )
 
             FunctionCardItem(
                 R.drawable.outline_expand_circle_down_24,
                 "More",
                 68.dp,
-                24.dp
+                24.dp,
+                onClick = {
+
+                }
             )
         }
     }
@@ -274,7 +271,8 @@ fun FunctionCardItem(
     imageRes: Int,
     label: String,
     cardSize: Dp,
-    iconSize: Dp
+    iconSize: Dp,
+    onClick: () -> Unit
 ) {
 
     Card(
@@ -292,6 +290,7 @@ fun FunctionCardItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .clickable { onClick() }
                 .padding(6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -318,10 +317,6 @@ fun FunctionCardItem(
     }
 }
 
-@Composable
-fun CircleShape(x0: Dp) {
-    TODO("Not yet implemented")
-}
 
 @Composable
 fun SearchBar() {
@@ -333,12 +328,15 @@ fun SearchBar() {
     val defaultText = "Search Places..."
 
     // Background
-    Box(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
 
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        colors  = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
     //outer box, space between search bar and screen edges 外层，搜索框距离屏幕左右边缘
     ) {
         // White SearchBar
@@ -377,7 +375,6 @@ fun SearchBar() {
                 modifier = Modifier
                     .size(28.dp)
                     .clickable(){
-
                     }
             )
         }
@@ -403,31 +400,19 @@ fun LocationSuggestions() {
             //weight(1f) - take remaining space 占据剩余空间，避免把map挤出
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(listOf("Barcelona", "Los Angeles", "Berlin", "Kuala Lumpur", "Moscow")) { city ->
+            items(listOf("Barcelona", "Los Angeles", "Berlin", "Kuala Lumpur", "Moscow"))
+            { city ->
                 //items - create UI for each element in the list 为列表中生成的每个数据生成UI
                 CityChip(city)
                 //pass each city into CityChip 把每个城市传入函数
             }
         }
-
-
-        /*{
-        item {
-               Box(
-                   modifier = Modifier
-                       .background(Color(0xFFE0F2F1))
-                       .padding(horizontal = 10.dp, vertical = 4.dp)
-               ) {
-                   Text(
-                       text = "Barcelona",
-                       fontSize = 12.sp,
-                       color = Color.Black
-                   )
-               }
-           } (item {"Los Angeles", "Berlin", "Kuala Lumpur", "Moscow"})
-           }*/
-
         // MAP
+        Card(
+            colors  = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+        ){
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -444,6 +429,7 @@ fun LocationSuggestions() {
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
+        }
     }
 }
 
@@ -455,7 +441,7 @@ fun CityChip(city: String) {
         modifier = Modifier
 
             .padding(horizontal = 10.dp, vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp),
+
         colors  = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -540,8 +526,9 @@ fun DealsSection() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            //.background(Color.White)
-            .padding(12.dp)
+
+            .padding(12.dp),
+
     ) {
         Column {
 
@@ -553,23 +540,37 @@ fun DealsSection() {
             ) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.discount1),
-                        contentDescription = "discount",
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
 
-                    Text(
-                        text = "Discount available",
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(start = 6.dp)
-                    )
+                            ),
+
+                        ) {
+                        Row () {
+                            Image(
+                                painter = painterResource(id = R.drawable.discount1),
+                                contentDescription = "discount",
+                                modifier = Modifier.size(20.dp)
+                            )
+
+
+                            Text(
+                                text = "Discount available",
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(start = 6.dp)
+                            )
+                        }
+                    }
                 }
 
-                Box(
+                Card(
                     modifier = Modifier
-                        //.background(Color(0xFFE0F2F1))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
                 ) {
                     Text("Claim all", fontSize = 11.sp)
                 }
@@ -579,105 +580,49 @@ fun DealsSection() {
 
             // Tickets
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                // Ticket1
-                Card(
-                    modifier = Modifier
-                        //.weight(1f)
-                        //.background(Color(0xFFF5F5F5))
-                        .padding(8.dp)
-                        .width(150.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors  = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
+                TicketItem("Hotels", 10)
+                TicketItem("Tickets", 5)
+                TicketItem("Tickets", 15)
 
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+            }
+        }
+    }
+}
 
-                        Image(
-                            painter = painterResource(id = R.drawable.ticket1),
-                            contentDescription = "ticket1",
-                            modifier = Modifier.size(36.dp)
-                        )
+@Composable
+fun TicketItem(
+    title: String,
+    discount: Int
+) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(150.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
 
-                        Column(
-                            modifier = Modifier.padding(start = 6.dp)
-                        ) {
-                            Text("Hotels", fontSize = 12.sp)
-                            Text("10% off", fontSize = 12.sp)
-                        }
-                    }
-                }
+            Image(
+                painter = painterResource(id = R.drawable.ticket1),
+                contentDescription = title,
+                modifier = Modifier.size(36.dp)
+            )
 
-
-
-                //Ticket2
-                Card(
-                    modifier = Modifier
-                        //.weight(1f)
-                        //.background(Color(0xFFF5F5F5))
-                        .padding(8.dp)
-                        .width(150.dp),
-                            shape = RoundedCornerShape(12.dp),
-                    colors  = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.ticket1),
-                            contentDescription = "ticket2",
-                            modifier = Modifier.size(36.dp)
-                        )
-
-                        Column(
-                            modifier = Modifier.padding(start = 6.dp)
-                        ) {
-                            Text("Tickets", fontSize = 12.sp)
-                            Text("5% off", fontSize = 12.sp)
-                        }
-                    }
-                }
-
-                //Ticket3
-                Card(
-                    modifier = Modifier
-                        //.weight(1f)
-                        //.background(Color(0xFFF5F5F5))
-                        .padding(8.dp)
-                        .width(150.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors  = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.ticket1),
-                            contentDescription = "ticket3",
-                            modifier = Modifier.size(36.dp)
-                        )
-
-                        Column(
-                            modifier = Modifier.padding(start = 6.dp)
-                        ) {
-                            Text("Tickets", fontSize = 12.sp)
-                            Text("15% off", fontSize = 12.sp)
-                        }
-                    }
-                }
+            Column(
+                modifier = Modifier.padding(start = 6.dp)
+            ) {
+                Text(title, fontSize = 12.sp)
+                Text("$discount% off", fontSize = 12.sp)
             }
         }
     }
@@ -685,259 +630,135 @@ fun DealsSection() {
 
 @Composable
 fun RecommendedSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            //.background(Color.White)
-            .padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    )
-
-    //Row1
-    {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-              //  .background(Color.White)
-                .padding(14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            // Card1
-            Card(
+            Column(
                 modifier = Modifier
-                    //.width(180.dp)
-                    .weight(1f)//card takes equal portion of row 卡片均分row的宽度
-                    .padding(end = 8.dp)//right spacing between cards 卡片右边距
-                //    .background(Color(0xFFF5F5F5))
-                    .padding(8.dp),//spacing inside card 卡片内部内容边距
+                    .fillMaxWidth()
 
-                colors  = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-
-                elevation = CardDefaults.cardElevation(4.dp)
-
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column {
 
-                    // Image
-                    Image(
-                        painter = painterResource(id = R.drawable.barcelona1),
-                        contentDescription = "Barcelona",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                    )
+//Row1
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TravelCard(
+                        image = R.drawable.barcelona1,
+                        title = "Explore Barcelona",
+                        author = "Alex",
+                        views = "1.2k views"
+                    ) {}
 
-                    // Title
-                    Text(
-                        text = "Explore Barcelona",
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(top = 6.dp)
-                    )
-
-                    // Author + Views
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "by Alex",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-
-                        Text(
-                            text = "1.2k views",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-                    }
+                    TravelCard(
+                        image = R.drawable.tokyo1,
+                        title = "Trip in Tokyo",
+                        author = "Emma",
+                        views = "980 views"
+                    ) {}
                 }
-            }
+                //Row2
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TravelCard(
+                        image = R.drawable.paris1,
+                        title = "Visit Paris",
+                        author = "Jason",
+                        views = "1.9k views"
+                    ) {}
 
-            // Card2
-            Card(
-                modifier = Modifier
-                    //.width(180.dp)
-                    .weight(1f)
-                    .padding(start = 8.dp)
-                  //  .background(Color(0xFFF5F5F5))
-                    .padding(8.dp),
-
-                colors  = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Column {
-
-                    Image(
-                        painter = painterResource(id = R.drawable.tokyo1),
-                        contentDescription = "Tokyo",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                    )
-
-                    Text(
-                        text = "Trip in Tokyo",
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(top = 6.dp)
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "by Emma",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-
-                        Text(
-                            text = "980 views",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-                    }
+                    TravelCard(
+                        image = R.drawable.london1,
+                        title = "Discover London",
+                        author = "Allen",
+                        views = "2.7k views"
+                    ) {}
                 }
             }
         }
-    }
-    //Row2
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                //.background(Color.White)
-                .padding(14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            // Card3
-            Card(
-                modifier = Modifier
-                    //.width(180.dp)
-                    .weight(1f)//card takes equal portion of row 卡片均分row的宽度
-                    .padding(end = 8.dp)//right spacing between cards 卡片右边距
-                  //  .background(Color(0xFFF5F5F5))
-                    .padding(8.dp),//spacing inside card 卡片内部内容边距
-
-                colors  = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-
-                elevation = CardDefaults.cardElevation(4.dp)
-
-            ) {
-                Column {
-
-                    // Image
-                    Image(
-                        painter = painterResource(id = R.drawable.paris1),
-                        contentDescription = "Paris",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                    )
-
-                    // Title
-                    Text(
-                        text = "Visit Paris",
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(top = 6.dp)
-                    )
-
-                    // Author + Views
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "by Jason",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-
-                        Text(
-                            text = "1.9k views",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
-
-            // Card4
-            Card(
-                modifier = Modifier
-                    //.width(180.dp)
-                    .weight(1f)
-                    .padding(start = 8.dp)
-                    //.background(Color(0xFFF5F5F5))
-                    .padding(8.dp),
-
-                colors  = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-
-                elevation = CardDefaults.cardElevation(4.dp)
-
-            ) {
-                Column {
-
-                    Image(
-                        painter = painterResource(id = R.drawable.london1),
-                        contentDescription = "London",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                    )
-
-                    Text(
-                        text = "Discover London",
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(top = 6.dp)
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "by Allen",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-
-                        Text(
-                            text = "2.7k views",
-                            fontSize = 10.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
-        }
-    }
 
 
 @Composable
-fun BottomBar() {
+fun TravelCard(
+    image: Int,
+    title: String,
+    author: String,
+    views: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .width(170.dp)
+            .padding(8.dp)
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column {
+
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            )
+
+            Text(
+                text = title,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(top = 6.dp, start = 8.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "by $author",
+                    fontSize = 10.sp,
+                    color = Color.Gray
+                )
+
+                Text(
+                    text = views,
+                    fontSize = 10.sp,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun BottomBar(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            //.background(Color.White)
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
 
         // Home
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.clickable {
+                navController.navigate("home_screen") {
+                    popUpTo("home_screen") { inclusive = true }
+                }
+            }
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.outline_home_24),
                 contentDescription = "Home",
@@ -990,7 +811,6 @@ fun BottomBar() {
 
 @Composable
 fun LoginModule() {
-
     //User Input
     var studentId by remember { mutableStateOf("") }
     // create a changeable state variable
@@ -1106,6 +926,9 @@ fun LoginModule() {
 @Composable
 fun QuickMove() {
     A206684_BieXianhe_Izwan_Lab1_1Theme() {
-        HomeScreen()
+        val navController = rememberNavController()
+        HomeScreen(
+            navController = navController
+        )
     }
 }
