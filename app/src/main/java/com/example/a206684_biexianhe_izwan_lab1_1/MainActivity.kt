@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,8 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.collections.listOf
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -50,10 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.navigation.AppNavigation
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.theme.A206684_BieXianhe_Izwan_Lab1_1Theme
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +61,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             A206684_BieXianhe_Izwan_Lab1_1Theme() {
                 val navController = rememberNavController()
+                val userViewModel: UserViewModel = viewModel()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = { TopBar() },
@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     AppNavigation(
                         navController = navController,
+                        userViewModel = userViewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                     }
@@ -82,19 +83,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomeScreen(
     navController: NavController,
+    userViewModel: UserViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier
         .fillMaxWidth()
         .verticalScroll(rememberScrollState()))
     {
+        LoginInformation(userViewModel)
         FunctionRow(navController)
         SearchBar()
         LocationSuggestions()
         SpecialFeatures()
         DealsSection()
         RecommendedSection()
-        LoginModule()
     }
 }
 
@@ -143,6 +145,22 @@ fun TopBar() {
     }
 }
 
+@Composable
+fun LoginInformation(
+    userViewModel: UserViewModel = viewModel()
+) {
+    Text(
+        text = if (userViewModel.isLoggedIn) {
+            "Welcome, ${userViewModel.userName}, ID: ${userViewModel.studentId}"
+        } else {
+            "Please login"
+        },
+        modifier = Modifier.padding(16.dp),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
 
 @Composable
 fun FunctionRow(
@@ -798,7 +816,12 @@ fun BottomBar(navController: NavController) {
         }
 
         // User
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.clickable{
+                navController.navigate("login_screen")
+            }
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.outline_account_circle_24),
                 contentDescription = "User",
@@ -809,126 +832,16 @@ fun BottomBar(navController: NavController) {
     }
 }
 
-@Composable
-fun LoginModule() {
-    //User Input
-    var studentId by remember { mutableStateOf("") }
-    // create a changeable state variable
-    var name by remember { mutableStateOf("") }
-    // remember - keep the value across recompositions 记住变量值，在重组recomposition时不丢失
-    var loggedIn by remember { mutableStateOf(false) }
-    //control login state true/false
-    var expanded by remember { mutableStateOf(true) }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .animateContentSize(),  //animate
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        ),
-        elevation = CardDefaults.cardElevation(6.dp)
-    ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            //title
-            Text(
-                text = "Login",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.clickable {
-                    expanded = !expanded   //switch
-                }
-            )
-
-            //expand
-            if (expanded) {
-
-                // Student_id + Login
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-
-                    TextField(
-                        value = studentId,//current text shown in the TextField / displayer 显示器
-                        onValueChange = { studentId = it },//update state
-                        placeholder = { Text("student_id") },//placeholder - shown when input empty
-                        singleLine = true,//single - line
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Button(
-                        onClick = { loggedIn = true },
-                        modifier = Modifier.height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        Text("Login")
-                    }
-                }
-
-                //name + reset
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-
-                    TextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        placeholder = { Text("name") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Button(
-                        onClick = {
-                            loggedIn = false
-                            studentId = ""
-                            name = ""
-                        },
-                        modifier = Modifier.height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        Text("Reset")
-                    }
-                }
-
-                // Login result
-                Text(
-                    text = if (loggedIn)
-                        "Welcome, $name, ID: $studentId"
-                    else
-                        "Please login",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun QuickMove() {
     A206684_BieXianhe_Izwan_Lab1_1Theme() {
         val navController = rememberNavController()
+        val userViewModel: UserViewModel = viewModel()
+
         HomeScreen(
-            navController = navController
+            navController = navController,
+            userViewModel = userViewModel
         )
     }
 }

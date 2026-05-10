@@ -11,22 +11,26 @@ import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.FlightScreen
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.FlightSummaryScreen
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.HotelScreen
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.HotelSummaryScreen
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.LoginScreen
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.TrainScreen
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.TrainSummaryScreen
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.FlightViewModel
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.HotelViewModel
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.TrainViewModel
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.UserViewModel
 
 
 @Composable
 fun AppNavigation(
     navController: NavHostController,
+    userViewModel: UserViewModel,
     modifier: Modifier = Modifier
 ) {
 
     val flightViewModel: FlightViewModel = viewModel()
     val hotelViewModel: HotelViewModel = viewModel()
     val trainViewModel: TrainViewModel = viewModel()
+
 
     NavHost(
         navController = navController,
@@ -35,7 +39,9 @@ fun AppNavigation(
     ) {
 
         composable("home_screen") {
-            HomeScreen(navController)
+            HomeScreen(
+                navController = navController,
+                userViewModel = userViewModel )
         }
 
         composable("flight_screen") {
@@ -60,6 +66,10 @@ fun AppNavigation(
 
         composable("train_summary_screen") {
             TrainSummaryScreen(navController, trainViewModel)
+        }
+
+        composable("login_screen") {
+            LoginScreen(userViewModel = userViewModel)
         }
 
     }
