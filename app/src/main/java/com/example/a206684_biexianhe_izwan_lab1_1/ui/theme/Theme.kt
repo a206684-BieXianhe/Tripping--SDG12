@@ -274,6 +274,7 @@ fun A206684_BieXianhe_Izwan_Lab1_1Theme(
         colorScheme = colorScheme,
         typography = AppTypography,
         content = content
+
     )
 }
 
