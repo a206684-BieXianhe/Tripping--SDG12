@@ -13,11 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.a206684_biexianhe_izwan_lab1_1.R
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.components.FunctionHeader
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.FlightViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun FlightSummaryScreen(
@@ -25,8 +25,9 @@ fun FlightSummaryScreen(
     viewModel: FlightViewModel
 ) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    val uiState = viewModel.flightUiState.collectAsState().value
 
+    Column(modifier = Modifier.fillMaxSize()) {
 
         FunctionHeader(
             title = "Flights",
@@ -43,6 +44,7 @@ fun FlightSummaryScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // 卡片显示内容
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,18 +52,20 @@ fun FlightSummaryScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
 
-                Text("Trip Type: ${viewModel.flightTripType}")
+
+                Text("Trip Type: ${uiState.flightDetails.tripType}")
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("From: ${viewModel.flightFrom}")
+                Text("From: ${uiState.flightDetails.fromLocation}")
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("To: ${viewModel.flightTo}")
+                Text("To: ${uiState.flightDetails.toLocation}")
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("Passengers: ${viewModel.flightPassengers}")
+                Text("Passengers: ${uiState.flightDetails.passengers}")
 
                 Spacer(modifier = Modifier.height(20.dp))
+
 
                 Button(
                     onClick = {
@@ -70,6 +74,18 @@ fun FlightSummaryScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Back")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Button(
+                    onClick = {
+                        navController.navigate("flight_history_screen")
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Flight History")
                 }
             }
         }

@@ -1,24 +1,17 @@
 package com.example.a206684_biexianhe_izwan_lab1_1.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.a206684_biexianhe_izwan_lab1_1.HomeScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.FlightScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.FlightSummaryScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.HotelScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.HotelSummaryScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.LoginScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.TrainScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.TrainSummaryScreen
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.FlightViewModel
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.HotelViewModel
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.TrainViewModel
-import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.UserViewModel
-
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.*
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.data.AppContainer
+import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.*
 
 @Composable
 fun AppNavigation(
@@ -27,21 +20,26 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
 
-    val flightViewModel: FlightViewModel = viewModel()
+    val context = LocalContext.current.applicationContext
+    val container = remember { AppContainer(context) }
+
+    val flightViewModel: FlightViewModel = viewModel(
+        factory = FlightViewModelFactory(container.flightRepository)
+    )
+
     val hotelViewModel: HotelViewModel = viewModel()
     val trainViewModel: TrainViewModel = viewModel()
-
 
     NavHost(
         navController = navController,
         startDestination = "home_screen",
         modifier = modifier
     ) {
-
         composable("home_screen") {
             HomeScreen(
                 navController = navController,
-                userViewModel = userViewModel )
+                userViewModel = userViewModel
+            )
         }
 
         composable("flight_screen") {
@@ -50,6 +48,15 @@ fun AppNavigation(
 
         composable("flight_summary_screen") {
             FlightSummaryScreen(navController, flightViewModel)
+        }
+
+        composable("flight_history_screen") {
+            FlightHistoryScreen(navController, flightViewModel)
+        }
+
+        composable("flight_edit_screen/{flightId}") { backStackEntry ->
+            val flightId = backStackEntry.arguments?.getString("flightId")?.toIntOrNull() ?: 0
+            FlightEditScreen(navController, flightViewModel, flightId)
         }
 
         composable("hotel_screen") {
@@ -71,6 +78,7 @@ fun AppNavigation(
         composable("login_screen") {
             LoginScreen(userViewModel = userViewModel)
         }
+
 
     }
 }

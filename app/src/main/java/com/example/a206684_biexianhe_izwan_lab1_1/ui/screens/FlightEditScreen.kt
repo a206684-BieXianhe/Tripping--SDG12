@@ -1,39 +1,32 @@
 package com.example.a206684_biexianhe_izwan_lab1_1.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.a206684_biexianhe_izwan_lab1_1.R
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.components.FunctionHeader
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.FlightViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.collectAsState
 
 @Composable
-fun FlightScreen(
+fun FlightEditScreen(
     navController: NavController,
-    viewModel: FlightViewModel
+    viewModel: FlightViewModel,
+    flightId: Int
 ) {
     val uiState = viewModel.flightUiState.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    LaunchedEffect(flightId) {
+        viewModel.loadFlight(flightId)
+    }
 
-        // Header
+    Column(modifier = Modifier.fillMaxSize()) {
         FunctionHeader(
-            title = "Flights",
+            title = "Edit Flight",
             imageRes = R.drawable.function1
         )
 
@@ -55,62 +48,52 @@ fun FlightScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // From
         OutlinedTextField(
             value = uiState.flightDetails.fromLocation,
             onValueChange = {
-                viewModel.updateFlightDetails(
-                    uiState.flightDetails.copy(fromLocation = it)
-                )
+                viewModel.updateFlightDetails(uiState.flightDetails.copy(fromLocation = it))
             },
             label = { Text("From") },
-            placeholder = { Text("Departure Station") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // To
         OutlinedTextField(
             value = uiState.flightDetails.toLocation,
             onValueChange = {
-                viewModel.updateFlightDetails(
-                    uiState.flightDetails.copy(toLocation = it)
-                )
+                viewModel.updateFlightDetails(uiState.flightDetails.copy(toLocation = it))
             },
             label = { Text("To") },
-            placeholder = { Text("Arrival Station") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Passengers
         OutlinedTextField(
             value = uiState.flightDetails.passengers,
             onValueChange = {
-                viewModel.updateFlightDetails(
-                    uiState.flightDetails.copy(passengers = it)
-                )
+                viewModel.updateFlightDetails(uiState.flightDetails.copy(passengers = it))
             },
             label = { Text("Passengers") },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
-        // Save & Search Button
         Button(
             onClick = {
                 coroutineScope.launch {
-                    viewModel.saveFlightData()
-                    navController.navigate("flight_summary_screen")
+                    viewModel.updateFlight()
+                    navController.navigate("flight_history_screen")
                 }
             },
             enabled = uiState.isInputValid,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
         ) {
-            Text("Search & Save")
+            Text("Save Changes")
         }
     }
 }
