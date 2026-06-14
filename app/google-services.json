@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "16441355783",
+    "project_id": "a206684-biexianhe-izwan",
+    "storage_bucket": "a206684-biexianhe-izwan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16441355783:android:4218db1a727489672bc4a2",
+        "android_client_info": {
+          "package_name": "com.example.a206684_biexianhe_izwan_lab1_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDidhjzlvZ9xI-crxfJHl2zuZrYIaV-Oa0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

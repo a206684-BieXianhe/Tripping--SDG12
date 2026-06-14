@@ -11,9 +11,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.components.FunctionHeader
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.HotelViewModel
@@ -21,9 +23,10 @@ import com.example.a206684_biexianhe_izwan_lab1_1.R
 
 @Composable
 fun HotelSummaryScreen(
-    navController: NavHostController,
+    navController: NavController,
     viewModel: HotelViewModel
 ) {
+    val uiState = viewModel.hotelUiState.collectAsState().value
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -34,9 +37,13 @@ fun HotelSummaryScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Hotel Summary", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Hotel Summary",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Card(
             modifier = Modifier
@@ -45,13 +52,13 @@ fun HotelSummaryScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
 
-                Text("Room Type: ${viewModel.hotelRoomType}")
+                Text("Room Type: ${uiState.hotelDetails.roomType}")
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("Nights: ${viewModel.hotelNights}")
+                Text("Nights: ${uiState.hotelDetails.nights}")
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("Rooms: ${viewModel.hotelRooms}")
+                Text("Rooms: ${uiState.hotelDetails.rooms}")
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -62,6 +69,17 @@ fun HotelSummaryScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Back")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {
+                        navController.navigate("hotel_history_screen")
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Hotel History")
                 }
             }
         }

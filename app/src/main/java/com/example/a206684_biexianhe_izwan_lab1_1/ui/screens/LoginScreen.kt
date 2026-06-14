@@ -27,11 +27,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.a206684_biexianhe_izwan_lab1_1.LoginInformation
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.UserViewModel
 
 @Composable
-fun LoginScreen(userViewModel: UserViewModel) {
+fun LoginScreen(
+    userViewModel: UserViewModel,
+    navController: NavController
+) {
 
 
     var expanded by remember { mutableStateOf(true) }
@@ -122,6 +126,19 @@ fun LoginScreen(userViewModel: UserViewModel) {
 
                     }
                     LoginInformation(userViewModel)
+                }
+                Button(
+                    onClick = {
+                        navController.navigate("location_screen")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Go to Location Screen")
                 }
             }
         }

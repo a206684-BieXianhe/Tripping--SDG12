@@ -1,39 +1,32 @@
 package com.example.a206684_biexianhe_izwan_lab1_1.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.a206684_biexianhe_izwan_lab1_1.R
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.components.FunctionHeader
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.HotelViewModel
-import com.example.a206684_biexianhe_izwan_lab1_1.R
 import kotlinx.coroutines.launch
 
 @Composable
-fun HotelScreen(
+fun HotelEditScreen(
     navController: NavController,
-    viewModel: HotelViewModel
+    viewModel: HotelViewModel,
+    hotelId: Int
 ) {
     val uiState = viewModel.hotelUiState.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    LaunchedEffect(hotelId) {
+        viewModel.loadHotel(hotelId)
+    }
 
-        // Header
+    Column(modifier = Modifier.fillMaxSize()) {
         FunctionHeader(
-            title = "Hotels",
+            title = "Edit Hotel",
             imageRes = R.drawable.function1
         )
 
@@ -55,13 +48,10 @@ fun HotelScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Nights
         OutlinedTextField(
             value = uiState.hotelDetails.nights,
             onValueChange = {
-                viewModel.updateHotelDetails(
-                    uiState.hotelDetails.copy(nights = it)
-                )
+                viewModel.updateHotelDetails(uiState.hotelDetails.copy(nights = it))
             },
             label = { Text("Nights") },
             placeholder = { Text("Number of Nights") },
@@ -70,33 +60,31 @@ fun HotelScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Rooms
         OutlinedTextField(
             value = uiState.hotelDetails.rooms,
             onValueChange = {
-                viewModel.updateHotelDetails(
-                    uiState.hotelDetails.copy(rooms = it)
-                )
+                viewModel.updateHotelDetails(uiState.hotelDetails.copy(rooms = it))
             },
             label = { Text("Rooms") },
             placeholder = { Text("Number of Rooms") },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
-        // Save & Search Button
         Button(
             onClick = {
                 coroutineScope.launch {
-                    viewModel.saveHotelData()
-                    navController.navigate("hotel_summary_screen")
+                    viewModel.updateHotel()
+                    navController.navigate("hotel_history_screen")
                 }
             },
             enabled = uiState.isInputValid,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
         ) {
-            Text("Search & Save")
+            Text("Save Changes")
         }
     }
 }

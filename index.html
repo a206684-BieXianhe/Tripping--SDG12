@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>[YOUR NAME] — e-Portfolio</title>
+<style>
+  :root {
+    --primary: #2e7d32;
+    --primary-light: #e8f5e9;
+    --primary-dark: #1b5e20;
+    --accent: #66bb6a;
+    --text: #1a1a1a;
+    --text-muted: #555;
+    --bg: #f9fbf9;
+    --card-bg: #ffffff;
+    --border: #c8e6c9;
+    --nav-h: 60px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: var(--primary);
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .nav-brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* hamburger */
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+  .nav-toggle span {
+    display: block; width: 22px; height: 2px;
+    background: #fff; margin: 5px 0; border-radius: 2px;
+    transition: 0.3s;
+  }
+  @media (max-width: 640px) {
+    .nav-toggle { display: block; }
+    .nav-links {
+      display: none; flex-direction: column; position: absolute;
+      top: var(--nav-h); left: 0; right: 0;
+      background: var(--primary-dark);
+      padding: 1rem 1.5rem 1.5rem;
+      gap: 0.5rem;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { font-size: 1rem; padding: 0.5rem 0.75rem; }
+  }
+
+  /* ── LAYOUT ── */
+  section { padding: 4rem 1.5rem; max-width: 960px; margin: 0 auto; }
+  section + section { border-top: 1px solid var(--border); }
+  h1 { font-size: 2.2rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; }
+  h2 { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; }
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 0.4rem; }
+  p { color: var(--text-muted); margin-bottom: 0.75rem; }
+
+  /* ── HERO ── */
+  #home {
+    background: linear-gradient(135deg, var(--primary-light) 0%, #f1f8e9 100%);
+    max-width: 100%;
+    padding: 5rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  #home .inner { max-width: 700px; margin: 0 auto; }
+  .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .hero-meta { margin-top: 1.5rem; font-size: 0.92rem; color: var(--text-muted); }
+  .hero-meta span { margin: 0 0.5rem; }
+
+  /* ── CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card:hover { box-shadow: 0 6px 24px rgba(46,125,50,0.12); transform: translateY(-2px); }
+  .card-body { padding: 1.25rem; flex: 1; }
+  .card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+  }
+  .card-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .card-reflection {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    background: var(--primary-light);
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 0.9rem;
+    border-radius: 0 6px 6px 0;
+    margin-top: 0.75rem;
+  }
+  .card-reflection::before {
+    content: '💬 Reflection: ';
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  /* ── VIDEO ── */
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background: #000;
+  }
+  .video-wrap iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* ── GITHUB BUTTON ── */
+  .btn-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #24292f;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 7px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    transition: background 0.2s;
+  }
+  .btn-github:hover { background: #444d56; }
+  .btn-github svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+
+  /* ── SKILLS ── */
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+  .skill-tag {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  /* ── REFLECTION ── */
+  .reflection-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem 2rem;
+    border-left: 5px solid var(--primary);
+  }
+  .reflection-box p { font-size: 1rem; color: var(--text-muted); }
+
+  /* ── RESOURCES ── */
+  .resources-list { list-style: none; padding: 0; }
+  .resources-list li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 0.5rem;
+  }
+  .resources-list li::before { content: '🔗'; flex-shrink: 0; }
+  .resources-list li:last-child { border-bottom: none; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--primary-dark);
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+    padding: 2rem 1.5rem;
+    font-size: 0.875rem;
+  }
+  footer strong { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAVIGATION ═══════════════════════════ -->
+<nav aria-label="Main navigation">
+  <a href="#home" class="nav-brand">📱 BIE XIANHE</a>
+  <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#labs">Labs</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#reflection">Reflection</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════ HOME / HERO ═══════════════════════════ -->
+<section id="home" aria-label="Introduction">
+  <div class="inner">
+    <div class="badge">SDG 12 —  Responsible Consumption and Production</div>
+    <h1>Name: Bie Xianhe </h1>
+    <p style="font-size:1.1rem; color:var(--text-muted); max-width:600px; margin:1rem auto;">
+      <!-- ✏️ Replace with your 2–3 sentence introduction -->
+      Welcome to my Mobile Programming e-Portfolio. This portfolio documents my learning journey across Labs 1 to 5 and Projects 1 and 2, undertaken as part of my Mobile Application Development course. Throughout this semester, I developed the skills to design modern Android user interfaces using Jetpack Compose, implement multi-screen navigation, manage application state with ViewModel, store data locally with Room Database, and connect to cloud services and external APIs to build complete, real-world mobile applications.
+      <br><br>
+      <strong>SDG 12: Responsible Consumption and Production</strong>
+      <br><br>
+      This project supports more sustainable everyday habits by giving users a clear and accessible way to track their consumption patterns. Through features such as real-time data recording, cloud synchronisation, and personalised insights, the app encourages mindful decision-making and helps individuals take small but meaningful steps toward more responsible consumption.
+    </p>
+    <div class="hero-meta">
+      <div>
+        <strong>
+          Programme:
+          Mobile Application Management (TM2213)
+        </strong>
+      </div>
+      <div>
+        Matric:
+        <strong>
+          A206684
+        </strong>
+      </div>
+      <div>
+        Instructor:
+        <strong>
+          Dr. Cikgu Izwan
+        </strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ LABS ═══════════════════════════════════ -->
+<section id="labs" aria-label="Lab submissions">
+  <h2>🧪 Labs</h2>
+  <div class="cards-grid">
+
+    <!-- LAB 1 -->
+    <article class="card">
+      <div class="video-wrap">
+        <!-- ✏️ Replace VIDEO_ID with your YouTube video ID (the part after ?v=) -->
+        <iframe
+          src="https://www.youtube.com/embed/csOQoWBwlOo"
+          title="Lab 1 — Basic UI Components demo video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Lab 1</p>
+        <h3>Basic UI Components</h3>
+        <p class="card-desc">Building fundamental Android UI elements using Jetpack Compose — buttons, text fields, and layouts.</p>
+        <blockquote class="card-reflection">
+          <!-- ✏️ Replace with your own 2–3 sentence reflection -->
+          In this lab I learned how to build UI elements using Jetpack Compose declarative syntax. I found the difference between Column and Row challenging at first but eventually understood the layout model. This lab gave me a strong foundation for the labs ahead."
+        </blockquote>
+      </div>
+    </article>
+
+    <!-- LAB 2 -->
+    <article class="card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/8eloUhTO1y0"
+          title="Lab 2 — Interaction &amp; State demo video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Lab 2</p>
+        <h3>Interaction &amp; State</h3>
+        <p class="card-desc">Implementing user interactions with state management using remember and mutableStateOf.</p>
+        <blockquote class="card-reflection">
+          In this lab I learned how to manage user interactions and application state using remember and mutableStateOf in Jetpack Compose. Understanding the concept of recomposition was initially confusing, but once I saw how the UI automatically updates when state changes, everything clicked. This lab shifted my thinking from static layouts to truly reactive interfaces.
+        </blockquote>
+      </div>
+    </article>
+
+    <!-- LAB 3 -->
+    <article class="card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/xeHj6WPV43w"
+          title="Lab 3 — Material Design demo video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Lab 3</p>
+        <h3>Material Design</h3>
+        <p class="card-desc">Applying Material Design 3 theming, colours, typography, and components to create polished UI.</p>
+        <blockquote class="card-reflection">
+          This lab introduced me to Material Design 3 and how to apply consistent theming, typography, and colour schemes across an Android app. I found it rewarding to see how a few theme changes could make an app look significantly more polished and professional. It also made me appreciate the importance of visual consistency in user experience.
+        </blockquote>
+      </div>
+    </article>
+
+    <!-- LAB 4 -->
+    <article class="card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/YH5jxePE4PY"
+          title="Lab 4 — Navigation demo video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Lab 4</p>
+        <h3>Navigation</h3>
+        <p class="card-desc">Implementing multi-screen navigation with Jetpack Navigation Compose and passing arguments between screens.</p>
+        <blockquote class="card-reflection">
+          Implementing multi-screen navigation with Jetpack Navigation Compose taught me how real apps are structured beyond a single screen. Passing arguments between destinations was tricky at first, but working through it gave me a much clearer picture of how screen flows are managed. This lab directly prepared me for building the project that followed.
+        </blockquote>
+      </div>
+    </article>
+
+    <!-- LAB 5 -->
+    <article class="card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/tDPvsFOy-3w"
+          title="Lab 5 — Room Database demo video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Lab 5</p>
+        <h3>Room Database</h3>
+        <p class="card-desc">Persisting data locally with Room, DAO, and ViewModel following the MVVM architecture pattern.</p>
+        <blockquote class="card-reflection">
+          In this lab I learned how to persist data locally using Room, including setting up entities, DAOs, and a database instance following the MVVM pattern. Connecting the database to a ViewModel and observing the data as a Flow felt complex initially, but it showed me how clean architecture keeps UI and data logic properly separated. This lab was the most technically demanding so far and the most rewarding to complete.
+        </blockquote>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════ PROJECTS ══════════════════════════════ -->
+<section id="projects" aria-label="Projects">
+  <h2>🚀 Projects</h2>
+  <div class="cards-grid">
+
+    <!-- PROJECT 1 -->
+    <article class="card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/k31nIuqVQlQ"
+          title="Project 1 — [Tripping] VSR video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Project 1 · Lab 4 + Working Features</p>
+        <h3>[Tripping — PROJECT 1]</h3>
+        <p class="card-desc">
+          <!-- ✏️ Replace with your problem statement (1–2 sentences) -->
+          Many travellers struggle to keep their trip details organised in one place, often relying on scattered notes or memory to track destinations, dates, and itinerary information. This app provides a straightforward trip management solution that allows users to record, view, and manage their travel plans entirely on-device.
+
+        </p>
+        <blockquote class="card-reflection">
+          <!-- ✏️ Replace with lessons learned (2–3 sentences) -->
+          Building Project 1 brought together everything I had practised across Labs 1 to 4 into a single cohesive application for the first time. Structuring the app with ViewModel meant my data survived screen rotations and navigation transitions without being lost, which was something I had only understood theoretically before. The biggest takeaway was learning how to connect UI, state, and navigation together as a system rather than treating them as separate exercises.
+
+        </blockquote>
+        <a
+          href="https://github.com/a206684-BieXianhe/Tripping--SDG12"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-github"
+          aria-label="View Project 1 on GitHub">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </article>
+
+    <!-- PROJECT 2 -->
+    <article class="card">
+      <div class="video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/VIDEO_ID_PROJECT2"
+          title="Project 2 — [Tripping] VSR video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="card-body">
+        <p class="card-label">Project 2 · Lab 5 + API + Sensors + Cloud</p>
+        <h3>[Tripping — PROJECT 2]</h3>
+        <p class="card-desc">
+          Travellers frequently need access to real-time weather conditions, location data, and reliable trip storage when planning or during a journey, yet most simple trip apps operate entirely offline without these capabilities. This app extends the trip management concept by integrating live weather information via API, GPS-based location tracking, and Firebase Firestore cloud sync so that trip data is always accurate, accessible, and backed up across devices.
+
+        </p>
+        <blockquote class="card-reflection">
+          Building Project 1 brought together everything I had practised across Labs 1 to 4 into a single cohesive application for the first time. Structuring the app with ViewModel meant my data survived screen rotations and navigation transitions without being lost, which was something I had only understood theoretically before. The biggest takeaway was learning how to connect UI, state, and navigation together as a system rather than treating them as separate exercises.
+        </blockquote>
+        <a
+          href="https://github.com/a206684-BieXianhe/Tripping--SDG12"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-github"
+          aria-label="View Project 2 on GitHub">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════ REFLECTION ════════════════════════════ -->
+<section id="reflection" aria-label="Overall reflection and learning journey">
+  <h2>💭 Reflection &amp; Learning Journey</h2>
+  <div class="reflection-box">
+    <p>
+      <!-- ✏️ Replace with your overall 3–4 sentence reflection -->
+      Over the course of this semester, my skills in mobile application development grew considerably. What began as building simple static screens in Lab 1 evolved into creating fully interactive apps with Material Design styling, multi-screen navigation, ViewModel-based state management, and local data persistence through Room Database.
+      <br><br>
+      Working through each lab in sequence helped me see how the individual pieces of Android development fit together as a whole. Completing the Quick Move application in particular bridged the gap between classroom exercises and real-world problem-solving, pushing me to think like a developer rather than just a student.
+      <br><br>
+      Project 2 opened up a new dimension of learning by introducing technologies I had not previously worked with, including Firebase Firestore for cloud storage, a Weather API for live data, and GPS sensors for location awareness. Connecting these components taught me how contemporary mobile apps interact with external services and the physical capabilities of a device.
+      <br><br>
+      Looking back, this course has left me with more than just technical knowledge — it has built my confidence in tackling complex development challenges and given me a solid, end-to-end understanding of how to design, build, test, and ship a modern Android application.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SKILLS ═══════════════════════════════ -->
+<section id="skills" aria-label="Skills and technology stack">
+  <h2>🛠️ Skills &amp; Tech Stack</h2>
+  <!-- ✏️ Add or remove skill tags to match your stack -->
+  <div class="skills-list" role="list">
+    <span class="skill-tag" role="listitem">Kotlin</span>
+    <span class="skill-tag" role="listitem">Jetpack Compose</span>
+    <span class="skill-tag" role="listitem">Android Studio</span>
+    <span class="skill-tag" role="listitem">Room Database</span>
+    <span class="skill-tag" role="listitem">Retrofit</span>
+    <span class="skill-tag" role="listitem">Firebase Firestore</span>
+    <span class="skill-tag" role="listitem">Firebase Auth</span>
+    <span class="skill-tag" role="listitem">ML Kit</span>
+    <span class="skill-tag" role="listitem">CameraX</span>
+    <span class="skill-tag" role="listitem">Navigation Compose</span>
+    <span class="skill-tag" role="listitem">ViewModel</span>
+    <span class="skill-tag" role="listitem">Kotlin Coroutines</span>
+    <span class="skill-tag" role="listitem">Material Design 3</span>
+    <span class="skill-tag" role="listitem">Git &amp; GitHub</span>
+    <!-- ✏️ Add more: <span class="skill-tag" role="listitem">YOUR SKILL</span> -->
+  </div>
+</section>
+
+<!-- ═══════════════════════════ RESOURCES ════════════════════════════ -->
+<section id="resources" aria-label="Resources and acknowledgements">
+  <h2>📚 Resources &amp; Acknowledgements</h2>
+  <ul class="resources-list">
+    <!-- ✏️ Replace / add lines to match your actual references -->
+    <li>Android Developers Documentation — <em>developer.android.com</em></li>
+    <li>Jetpack Compose Tutorial — <em>developer.android.com/jetpack/compose</em></li>
+    <li>Room Persistence Library — <em>developer.android.com/training/data-storage/room</em></li>
+    <li>Retrofit 2 by Square — <em>square.github.io/retrofit</em></li>
+    <li>Firebase Documentation — <em>firebase.google.com/docs</em></li>
+    <li>ML Kit — <em>developers.google.com/ml-kit</em></li>
+    <li>CameraX Overview — <em>developer.android.com/training/camerax</em></li>
+    <li>
+      <strong>AI Assistance:</strong> Claude (Anthropic) was used to assist with generating boilerplate code, debugging, and structuring this e-Portfolio template. All final decisions, reflections, and project implementations are my own.
+    </li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════════ -->
+<footer>
+  <p>
+    <strong>Bie Xianhe &nbsp;·&nbsp;
+    A206684 &nbsp;·&nbsp;
+    Tripping &nbsp;·&nbsp;
+    © 2026 </strong>
+  </p>
+  <p style="margin-top:0.5rem; font-size:0.8rem; opacity:0.6;">
+    <strong> Built for hMobile Application Management (TM2213) &nbsp;·&nbsp; Instructor: Dr. Cikgu Izwan </strong>
+  </p>
+</footer>
+
+<script>
+  /* close mobile menu when a link is clicked */
+  document.querySelectorAll('.nav-links a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>

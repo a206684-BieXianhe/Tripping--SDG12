@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.a206684_biexianhe_izwan_lab1_1.HomeScreen
+import com.example.a206684_biexianhe_izwan_lab1_1.TrippingApplication
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.screens.*
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.data.AppContainer
 import com.example.a206684_biexianhe_izwan_lab1_1.ui.viewmodel.*
@@ -21,13 +22,14 @@ fun AppNavigation(
 ) {
 
     val context = LocalContext.current.applicationContext
-    val container = remember { AppContainer(context) }
-
+    val app = context as TrippingApplication
     val flightViewModel: FlightViewModel = viewModel(
-        factory = FlightViewModelFactory(container.flightRepository)
+        factory = FlightViewModelFactory(app.container.flightRepository)
+    )
+    val hotelViewModel: HotelViewModel = viewModel(
+        factory = HotelViewModelFactory(app.container.hotelRepository)
     )
 
-    val hotelViewModel: HotelViewModel = viewModel()
     val trainViewModel: TrainViewModel = viewModel()
 
     NavHost(
@@ -67,6 +69,15 @@ fun AppNavigation(
             HotelSummaryScreen(navController, hotelViewModel)
         }
 
+        composable("hotel_history_screen") {
+            HotelHistoryScreen(navController, hotelViewModel)
+        }
+
+        composable("hotel_edit_screen/{hotelId}") { backStackEntry ->
+            val hotelId = backStackEntry.arguments?.getString("hotelId")?.toIntOrNull() ?: 0
+            HotelEditScreen(navController, hotelViewModel, hotelId)
+        }
+
         composable("train_screen") {
             TrainScreen(navController, trainViewModel)
         }
@@ -76,7 +87,17 @@ fun AppNavigation(
         }
 
         composable("login_screen") {
-            LoginScreen(userViewModel = userViewModel)
+            LoginScreen(userViewModel, navController)
+        }
+
+        composable("location_screen") {
+            LocationScreen(navController)
+        }
+
+        composable("weather_screen/{lat}/{lng}") { backStackEntry ->
+            val lat = backStackEntry.arguments?.getString("lat") ?: "3.1390"
+            val lng = backStackEntry.arguments?.getString("lng") ?: "101.6869"
+            WeatherScreen(navController, lat, lng)
         }
 
 

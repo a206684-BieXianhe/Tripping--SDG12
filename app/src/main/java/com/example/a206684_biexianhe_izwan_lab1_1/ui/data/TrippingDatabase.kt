@@ -6,13 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [FlightEntity::class],
-    version = 1,
+    entities = [FlightEntity::class,
+        HotelEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class TrippingDatabase : RoomDatabase() {
 
     abstract fun flightDao(): FlightDao
+    abstract fun hotelDao(): HotelDao
 
     companion object {
         @Volatile
